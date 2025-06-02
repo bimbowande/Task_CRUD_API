@@ -13,7 +13,7 @@ export const createTask = async (title, description, status, dueDate) => {
 };
 
 export const getAllTask = async () =>
-  await prisma.task.findMany({ orderBy: { dueDate: "asc" } });
+  await prisma.task.findMany({ orderBy: { id: "desc" } });
 
 export const getTaskById = async (id: string) =>
   await prisma.task.findUnique({ where: { id } });

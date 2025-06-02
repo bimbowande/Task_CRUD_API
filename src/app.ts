@@ -45,7 +45,7 @@ app.get("/api/tasks", async (_req, res) => {
 // get task by id
 app.get("/api/tasks/:id", async (req: any, res: any) => {
   //validate if status is given
-  if (!req.id) res.status(400).json("Task id is not found");
+  if (!req.id) res.status(400).json("Task is is not found");
 
   //process the request
   try {
@@ -78,7 +78,7 @@ app.delete("/api/tasks/:id", async (req: any, res: any) => {
   try {
     const deletedTask = await deleteTask(id);
     if (deleteTask)
-      return res.status(204).json({ message: "Task succesfully deleted" });
+      return res.status(200).json({ message: "Task succesfully deleted" });
   } catch (err) {
     return res.status(500).json({ message: "Task failed to deleted" });
   }
