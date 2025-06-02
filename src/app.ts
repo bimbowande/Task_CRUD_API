@@ -9,6 +9,7 @@ import {
   getTaskById,
   updateTaskStatus,
 } from "./db/query";
+import { createTaskSchema, updateStatusSchema } from "./validator";
 
 const app = express();
 app.use(cors());
@@ -20,10 +21,18 @@ const tasks: Task[] = [];
 
 //Create Task
 app.post("/api/tasks/create", async (req: any, res: any) => {
-  const { title, description, status, dueDate } = req?.body;
-  if (!title || !status || !dueDate) {
-    return res.status(400).json({ message: " Missing required fields" });
+  const parseResult = createTaskSchema.safeParse(req?.body);
+
+  if (!parseResult.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Validation failed",
+      errors: parseResult.error.flatten().fieldErrors,
+    });
   }
+
+  const { title, description, status, dueDate } = parseResult.data;
+
   try {
     const task = await createTask(title, description, status, dueDate);
     if (task) res.status(201).json(task);
@@ -58,8 +67,17 @@ app.get("/api/tasks/:id", async (req: any, res: any) => {
 
 app.patch("/api/tasks/:id/status", async (req: any, res: any) => {
   const { id } = req.params;
-  const { status } = req.body;
 
+  const parseData = updateStatusSchema.safeParse(req.body);
+
+  if (!parseData.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Validation failed",
+      errors: parseData.error.flatten().fieldErrors,
+    });
+  }
+  const { status } = parseData.data;
   if (!id) return res.status(404).json(" Task id is not found");
   if (!status) return res.status(400).json("Task status is not found");
 
