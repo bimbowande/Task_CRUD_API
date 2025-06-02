@@ -2,6 +2,7 @@ import express from "express";
 import { Task } from "./model/model";
 import { v4 as uuidv4 } from "uuid";
 import cors from "cors";
+import { createTask } from "./db/query";
 
 const app = express();
 app.use(cors());
@@ -12,20 +13,28 @@ const PORT = 3000;
 const tasks: Task[] = [];
 
 //Create Task
-app.post("/api/tasks/create", (req: any, res: any) => {
+app.post("/api/tasks/create", async (req: any, res: any) => {
   const { title, description, status, dueDate } = req?.body;
   if (!title || !status || !dueDate) {
     return res.status(400).json({ message: " Missing required fields" });
   }
-  const task: Task = {
-    id: uuidv4(),
-    title,
-    description,
-    status,
-    dueDate,
-  };
-  tasks.push(task);
-  res.status(201).json(task);
+
+  try {
+    const task = await createTask(title, description, status, dueDate);
+    if (task) res.status(201).json(task);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create task" });
+  }
+
+  //   const task: Task = {
+  //     id: uuidv4(),
+  //     title,
+  //     description,
+  //     status,
+  //     dueDate,
+  //   };
+  //   tasks.push(task);
+  //res.status(201).json(task);
 });
 
 //get all tasks

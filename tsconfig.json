@@ -5,7 +5,11 @@
     "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": "src",
+    "paths": {
+      "@prisma-client": ["generated/prisma"]
+    }
   },
   "lib": ["es2015"]
 }
